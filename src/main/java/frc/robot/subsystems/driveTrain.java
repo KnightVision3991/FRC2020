@@ -8,9 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -32,14 +30,14 @@ public class driveTrain extends SubsystemBase {
 
 
   //An array that stores all of our motors in an easy to iterate array rather than 6 different variables(Talon SRX version) - Compiler will unwind forloops anyways
-  private final WPI_TalonSRX[] driveTrainMotors = {
-    new WPI_TalonSRX(0),
-    new WPI_TalonSRX(1),
-    new WPI_TalonSRX(2),
+  private final WPI_TalonFX[] driveTrainMotors = {
+    new WPI_TalonFX(0),
+    new WPI_TalonFX(1),
+    new WPI_TalonFX(2),
 
-    new WPI_TalonSRX(3),
-    new WPI_TalonSRX(4),
-    new WPI_TalonSRX(5),
+    new WPI_TalonFX(3),
+    new WPI_TalonFX(4),
+    new WPI_TalonFX(5),
   };
 
   /**
@@ -64,9 +62,7 @@ public class driveTrain extends SubsystemBase {
     driveTrainMotors[4].set(ControlMode.Follower, 3);
     driveTrainMotors[5].set(ControlMode.Follower, 3);
 
-    driveTrainMotors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-    driveTrainMotors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-
+    
 
     driveTrainMotors[0].configNominalOutputForward(0, Constants.kTimeoutMs);
     driveTrainMotors[0].configNominalOutputReverse(0, Constants.kTimeoutMs);
