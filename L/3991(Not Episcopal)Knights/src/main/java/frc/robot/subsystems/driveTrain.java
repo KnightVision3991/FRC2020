@@ -8,10 +8,12 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class driveTrain extends SubsystemBase {
 
@@ -45,12 +47,6 @@ public class driveTrain extends SubsystemBase {
    */
   public driveTrain() {
 
-    //Set each of the back two motors to follow the lead motor 
-    /*driveTrainMotors[1].set(ControlMode.Follower, 0);
-    driveTrainMotors[2].set(ControlMode.Follower, 0);
-
-    driveTrainMotors[4].set(ControlMode.Follower, 3);
-    driveTrainMotors[5].set(ControlMode.Follower, 3);*/
 
     for(int i = 0; i < 6; i++) {
       driveTrainMotors[i].configFactoryDefault();
@@ -61,7 +57,37 @@ public class driveTrain extends SubsystemBase {
       //Talon FX
     }
 
+    //Set each of the back two motors to follow the lead motor 
+    driveTrainMotors[1].set(ControlMode.Follower, 0);
+    driveTrainMotors[2].set(ControlMode.Follower, 0);
 
+    driveTrainMotors[4].set(ControlMode.Follower, 3);
+    driveTrainMotors[5].set(ControlMode.Follower, 3);
+
+    driveTrainMotors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+    driveTrainMotors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+
+
+    driveTrainMotors[0].configNominalOutputForward(0, Constants.kTimeoutMs);
+    driveTrainMotors[0].configNominalOutputReverse(0, Constants.kTimeoutMs);
+    driveTrainMotors[0].configPeakOutputForward(1, Constants.kTimeoutMs);
+    driveTrainMotors[0].configPeakOutputReverse(-1, Constants.kTimeoutMs);
+
+    driveTrainMotors[0].config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kF, Constants.kTimeoutMs);
+		driveTrainMotors[0].config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kP, Constants.kTimeoutMs);
+		driveTrainMotors[0].config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kI, Constants.kTimeoutMs);
+		driveTrainMotors[0].config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kD, Constants.kTimeoutMs);
+
+
+    driveTrainMotors[3].configNominalOutputForward(0, Constants.kTimeoutMs);
+    driveTrainMotors[3].configNominalOutputReverse(0, Constants.kTimeoutMs);
+    driveTrainMotors[3].configPeakOutputForward(1, Constants.kTimeoutMs);
+    driveTrainMotors[3].configPeakOutputReverse(-1, Constants.kTimeoutMs);
+
+    driveTrainMotors[3].config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kF, Constants.kTimeoutMs);
+		driveTrainMotors[3].config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kP, Constants.kTimeoutMs);
+		driveTrainMotors[3].config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kI, Constants.kTimeoutMs);
+		driveTrainMotors[3].config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kD, Constants.kTimeoutMs);
 
   }
 
