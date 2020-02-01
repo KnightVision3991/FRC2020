@@ -18,31 +18,24 @@ public class driveTrainCommand extends CommandBase {
 
   private final driveTrain m_subsystem;
 
-  
-  public driveTrainCommand(driveTrain subsystem) {
-    m_subsystem = subsystem;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_subsystem);
-  }
+  double throttle;
+  double rotation;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
+  
+  public driveTrainCommand(driveTrain subsystem, double throttle, double rotation) {
+    m_subsystem = subsystem;
+
+    this.throttle = throttle;
+    this.rotation = rotation;
+
+    addRequirements(m_subsystem);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-  }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-  }
+    m_subsystem.arcadeDrivePID(throttle, rotation);
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
   }
 }

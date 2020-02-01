@@ -90,8 +90,7 @@ public class driveTrain extends SubsystemBase {
 
 
 
-
-    CommandScheduler.getInstance().setDefaultCommand(this, new driveTrainCommand(this));
+    
   }
 
   @Override
