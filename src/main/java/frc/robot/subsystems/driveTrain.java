@@ -8,8 +8,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -65,17 +67,18 @@ public class driveTrain extends SubsystemBase {
     driveTrainMotors[4].set(ControlMode.Follower, 3);
     driveTrainMotors[5].set(ControlMode.Follower, 3);
 
-    
+    driveTrainMotors[0].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    driveTrainMotors[3].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
     driveTrainMotors[0].configNominalOutputForward(0, Constants.kTimeoutMs);
     driveTrainMotors[0].configNominalOutputReverse(0, Constants.kTimeoutMs);
     driveTrainMotors[0].configPeakOutputForward(1, Constants.kTimeoutMs);
     driveTrainMotors[0].configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
-    driveTrainMotors[0].config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kF, Constants.kTimeoutMs);
-		driveTrainMotors[0].config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kP, Constants.kTimeoutMs);
-		driveTrainMotors[0].config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kI, Constants.kTimeoutMs);
-		driveTrainMotors[0].config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kD, Constants.kTimeoutMs);
+    driveTrainMotors[0].config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocity0.kF, Constants.kTimeoutMs);
+		driveTrainMotors[0].config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocity0.kP, Constants.kTimeoutMs);
+		driveTrainMotors[0].config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocity0.kI, Constants.kTimeoutMs);
+		driveTrainMotors[0].config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocity0.kD, Constants.kTimeoutMs);
 
 
     driveTrainMotors[3].configNominalOutputForward(0, Constants.kTimeoutMs);
@@ -83,10 +86,10 @@ public class driveTrain extends SubsystemBase {
     driveTrainMotors[3].configPeakOutputForward(1, Constants.kTimeoutMs);
     driveTrainMotors[3].configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
-    driveTrainMotors[3].config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kF, Constants.kTimeoutMs);
-		driveTrainMotors[3].config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kP, Constants.kTimeoutMs);
-		driveTrainMotors[3].config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kI, Constants.kTimeoutMs);
-		driveTrainMotors[3].config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kD, Constants.kTimeoutMs);
+    driveTrainMotors[3].config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocity1.kF, Constants.kTimeoutMs);
+		driveTrainMotors[3].config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocity1.kP, Constants.kTimeoutMs);
+		driveTrainMotors[3].config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocity1.kI, Constants.kTimeoutMs);
+		driveTrainMotors[3].config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocity1.kD, Constants.kTimeoutMs);
 
 
 
@@ -95,7 +98,14 @@ public class driveTrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+
+    SmartDashboard.putNumber("Left Side Encoder Values", driveTrainMotors[0].getSensorCollection().getIntegratedSensorVelocity()/2048 * 600);
+    SmartDashboard.putNumber("Left Side Encoder Target", leftTargetVelocity);
+
+    SmartDashboard.putNumber("Right Side Encoder Values", driveTrainMotors[3].getSensorCollection().getIntegratedSensorVelocity()/2048 * 600);
+    SmartDashboard.putNumber("Right Side Encoder Target", rightTargetVelocity);
+
+
   }
 
   
@@ -103,6 +113,9 @@ public class driveTrain extends SubsystemBase {
   public void arcadeDrivePID(double throttle, double rot) {
     double leftPow = throttle + rot;
     double rightPow = throttle - rot;
+
+    leftTargetVelocity = leftPow * 6000;
+    rightTargetVelocity = rightPow * 6000;
 
     driveTrainMotors[0].set(ControlMode.Velocity, leftPow * PIDMultiplier);
     driveTrainMotors[3].set(ControlMode.Velocity, rightPow * PIDMultiplier);
