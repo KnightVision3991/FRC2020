@@ -24,7 +24,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final driveTrain driveTrain = new driveTrain();
 
-  private final driveTrainCommand m_autoCommand = new driveTrainCommand(driveTrain, 0 ,0);
+  private final driveTrainCommand m_autoCommand = new driveTrainCommand(driveTrain, () -> 0 , () -> 0);
 
 
   private final XboxController gamepad = new XboxController(0);
@@ -36,8 +36,8 @@ public class RobotContainer {
     // Configure the button bindings
 
     driveTrain.setDefaultCommand(new driveTrainCommand(driveTrain, 
-    gamepad.getTriggerAxis(Hand.kRight),
-    gamepad.getX(Hand.kLeft)));
+    () -> gamepad.getTriggerAxis(Hand.kRight),
+    () -> gamepad.getX(Hand.kLeft)));
 
     configureButtonBindings();
   }

@@ -8,6 +8,9 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.driveTrain;
+
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -18,11 +21,11 @@ public class driveTrainCommand extends CommandBase {
 
   private final driveTrain m_subsystem;
 
-  double throttle;
-  double rotation;
+  DoubleSupplier throttle;
+  DoubleSupplier rotation;
 
   
-  public driveTrainCommand(driveTrain subsystem, double throttle, double rotation) {
+  public driveTrainCommand(driveTrain subsystem, DoubleSupplier throttle, DoubleSupplier rotation) {
     m_subsystem = subsystem;
 
     this.throttle = throttle;
@@ -35,7 +38,7 @@ public class driveTrainCommand extends CommandBase {
   @Override
   public void execute() {
 
-    m_subsystem.arcadeDrivePID(throttle, rotation);
+    m_subsystem.arcadeDrivePID(throttle.getAsDouble(), rotation.getAsDouble());
 
   }
 }
