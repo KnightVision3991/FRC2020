@@ -33,13 +33,13 @@ public class driveTrain extends SubsystemBase {
 
   //An array that stores all of our motors in an easy to iterate array rather than 6 different variables(Talon SRX version) - Compiler will unwind forloops anyways
   private final WPI_TalonFX[] driveTrainMotors = {
-    new WPI_TalonFX(0),
     new WPI_TalonFX(1),
     new WPI_TalonFX(2),
-
     new WPI_TalonFX(3),
+
     new WPI_TalonFX(4),
     new WPI_TalonFX(5),
+    new WPI_TalonFX(6),
   };
   
 
