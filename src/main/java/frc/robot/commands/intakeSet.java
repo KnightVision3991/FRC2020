@@ -8,12 +8,18 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.intake;
 
 public class intakeSet extends CommandBase {
   /**
    * Creates a new intakeSet.
    */
-  public intakeSet() {
+  private final intake m_subsystem;
+  private final double power;
+  public intakeSet(intake subsystem, double pow) {
+    m_subsystem = subsystem;
+    power = pow;
+    addRequirements(m_subsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -25,6 +31,7 @@ public class intakeSet extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    m_subsystem.intakeSet(power);
   }
 
   // Called once the command ends or is interrupted.

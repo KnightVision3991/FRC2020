@@ -17,6 +17,7 @@ public class intake extends SubsystemBase {
    * Creates a new intake.
    */
   private final TalonSRX intakeMotor = new TalonSRX(4);
+  private double power;
 
   public intake() {
     intakeMotor.configFactoryDefault();
@@ -27,11 +28,12 @@ public class intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void intakeBall(){
-    intakeMotor.set(ControlMode.PercentOutput, 1);
+  public void intakeSet(double pow){
+    power = pow;
   }
 
-  public void outtakeBall(){
-    intakeMotor.set(ControlMode.PercentOutput, -1);
+  public void intakeWork(){
+    intakeMotor.set(ControlMode.PercentOutput, power);
   }
+
 }
