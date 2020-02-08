@@ -9,6 +9,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,20 +36,21 @@ public class driveTrain extends SubsystemBase {
 
 
   //An array that stores all of our motors in an easy to iterate array rather than 6 different variables(Talon SRX version) - Compiler will unwind forloops anyways
-  private final WPI_TalonFX[] driveTrainMotors = {
-    new WPI_TalonFX(1),
-    new WPI_TalonFX(2),
-    new WPI_TalonFX(3),
+  private final TalonFX[] driveTrainMotors = {
+    new TalonFX(1),
+    new TalonFX(2),
+    new TalonFX(3),
 
-    new WPI_TalonFX(4),
-    new WPI_TalonFX(5),
-    new WPI_TalonFX(6),
+    new TalonFX(4),
+    new TalonFX(5),
+    new TalonFX(6),
   };
   
 
   double leftTargetVelocity;
   double rightTargetVelocity; 
   public double PIDMultiplier = 6000 * 2048 / 600;
+  SupplyCurrentLimitConfiguration driveLimitConfig = new SupplyCurrentLimitConfiguration(true, 35, 40, 0.1);
 
   /**
    * Creates a new driveTrain.
@@ -57,6 +60,7 @@ public class driveTrain extends SubsystemBase {
 
     for(int i = 0; i < 6; i++) {
       driveTrainMotors[i].configFactoryDefault();
+      driveTrainMotors[i].configSupplyCurrentLimit(driveLimitConfig);
 
     }
 
@@ -89,7 +93,8 @@ public class driveTrain extends SubsystemBase {
     driveTrainMotors[3].config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocity1.kF, Constants.kTimeoutMs);
 		driveTrainMotors[3].config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocity1.kP, Constants.kTimeoutMs);
 		driveTrainMotors[3].config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocity1.kI, Constants.kTimeoutMs);
-		driveTrainMotors[3].config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocity1.kD, Constants.kTimeoutMs);
+    driveTrainMotors[3].config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocity1.kD, Constants.kTimeoutMs);
+    
 
 
 

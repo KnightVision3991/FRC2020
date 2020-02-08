@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.commands.driveTrainCommand;
+import frc.robot.commands.elevatorCommand;
+import frc.robot.subsystems.climber;
 import frc.robot.subsystems.driveTrain;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final driveTrain driveTrain = new driveTrain();
+  private final climber climber = new climber();
 
   private final driveTrainCommand m_autoCommand = new driveTrainCommand(driveTrain, () -> 0 , () -> 0);
 
@@ -38,6 +41,7 @@ public class RobotContainer {
     driveTrain.setDefaultCommand(new driveTrainCommand(driveTrain, 
     () -> gamepad.getTriggerAxis(Hand.kRight),
     () -> gamepad.getX(Hand.kLeft)));
+    driveTrain.setDefaultCommand(new elevatorCommand(climber));
 
     configureButtonBindings();
   }

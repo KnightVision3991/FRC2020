@@ -23,7 +23,7 @@ public class climber extends SubsystemBase {
   private final TalonSRX winchMotor = new TalonSRX(2);
   private final TalonSRX winchFollower = new TalonSRX(3);
 
-  private final int pos;
+  private int pos;
 
   public climber() {
     pos = 0;
@@ -82,6 +82,6 @@ public class climber extends SubsystemBase {
   }
 
   public void setElevatorPosition(int position){
-    
+    pos = position;
   }
 }

@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.lang.reflect.Array;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants.  This class should not be used for any other purpose.  All constants should be
@@ -52,4 +54,7 @@ public final class Constants {
 
 	public final static Gains kGains_elevator = new Gains(0.25, 0.001, 20, .003, 300, 1);
 	public final static Gains kGains_winch = new Gains(0.25, 0.001, 20, .003, 300, 1);
+	public final static int[] elevatorPos = {0,200};
+	
+
 }
