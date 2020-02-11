@@ -8,7 +8,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+
 import frc.robot.Constants;
 import frc.robot.commands.elevatorCommand;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -22,36 +25,44 @@ public class climber extends SubsystemBase {
   private final TalonSRX elevatorMotor = new TalonSRX(1);
   private final TalonSRX winchMotor = new TalonSRX(2);
   private final TalonSRX winchFollower = new TalonSRX(3);
+  TalonSRXConfiguration elevatorConfig = new TalonSRXConfiguration();
+  TalonSRXConfiguration winchConfig = new TalonSRXConfiguration();
 
   private int pos;
 
   public climber() {
     pos = 0;
+    elevatorConfig.nominalOutputForward = 0;
+    elevatorConfig.nominalOutputReverse = 0;
+    elevatorConfig.peakOutputForward = 1;
+    elevatorConfig.peakOutputReverse = -1;
+    elevatorConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.CTRE_MagEncoder_Relative;
+    elevatorConfig.slot0.kF = Constants.kGains_elevator.kF;
+    elevatorConfig.slot0.kP = Constants.kGains_elevator.kP;
+    elevatorConfig.slot0.kI = Constants.kGains_elevator.kI;
+    elevatorConfig.slot0.kD = Constants.kGains_elevator.kD;
+
+    winchConfig.nominalOutputForward = 0;
+    winchConfig.nominalOutputReverse = 0;
+    winchConfig.peakOutputForward = 1;
+    winchConfig.peakOutputReverse = -1;
+    winchConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.CTRE_MagEncoder_Relative;
+    winchConfig.slot0.kF = Constants.kGains_winch.kF;
+    winchConfig.slot0.kP = Constants.kGains_winch.kP;
+    winchConfig.slot0.kI = Constants.kGains_winch.kI;
+    winchConfig.slot0.kD = Constants.kGains_winch.kD;
+
+
     elevatorMotor.configFactoryDefault();
     winchMotor.configFactoryDefault();
     winchFollower.configFactoryDefault();
 
+    elevatorMotor.configAllSettings(elevatorConfig);
+    winchMotor.configAllSettings(winchConfig);
+    winchFollower.configAllSettings(winchConfig);
+
+
     winchFollower.follow(winchMotor);
-
-    elevatorMotor.configNominalOutputForward(0, Constants.kTimeoutMs);
-    elevatorMotor.configNominalOutputReverse(0, Constants.kTimeoutMs);
-    elevatorMotor.configPeakOutputForward(1, Constants.kTimeoutMs);
-    elevatorMotor.configPeakOutputReverse(-1, Constants.kTimeoutMs);
-
-    elevatorMotor.config_kF(Constants.kPIDLoopIdx, Constants.kGains_elevator.kF, Constants.kTimeoutMs);
-		elevatorMotor.config_kP(Constants.kPIDLoopIdx, Constants.kGains_elevator.kP, Constants.kTimeoutMs);
-		elevatorMotor.config_kI(Constants.kPIDLoopIdx, Constants.kGains_elevator.kI, Constants.kTimeoutMs);
-    elevatorMotor.config_kD(Constants.kPIDLoopIdx, Constants.kGains_elevator.kD, Constants.kTimeoutMs);
-    
-    winchMotor.configNominalOutputForward(0, Constants.kTimeoutMs);
-    winchMotor.configNominalOutputReverse(0, Constants.kTimeoutMs);
-    winchMotor.configPeakOutputForward(1, Constants.kTimeoutMs);
-    winchMotor.configPeakOutputReverse(-1, Constants.kTimeoutMs);
-
-    winchMotor.config_kF(Constants.kPIDLoopIdx, Constants.kGains_winch.kF, Constants.kTimeoutMs);
-		winchMotor.config_kP(Constants.kPIDLoopIdx, Constants.kGains_winch.kP, Constants.kTimeoutMs);
-		winchMotor.config_kI(Constants.kPIDLoopIdx, Constants.kGains_winch.kI, Constants.kTimeoutMs);
-    winchMotor.config_kD(Constants.kPIDLoopIdx, Constants.kGains_winch.kD, Constants.kTimeoutMs);
     
     CommandScheduler.getInstance().setDefaultCommand(this, new elevatorCommand(this));
 

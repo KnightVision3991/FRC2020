@@ -126,6 +126,13 @@ public class driveTrain extends SubsystemBase {
     driveTrainMotors[0].set(ControlMode.Velocity, leftPow * PIDMultiplier);
     driveTrainMotors[3].set(ControlMode.Velocity, rightPow * PIDMultiplier);
 
+  }
 
+  public void arcadeDrive(double throttle, double rot){
+    double leftPow = throttle + rot;
+    double rightPow = throttle - rot;
+    
+    driveTrainMotors[0].set(ControlMode.PercentOutput, -leftPow);
+    driveTrainMotors[3].set(ControlMode.PercentOutput, rightPow);
   }
 }

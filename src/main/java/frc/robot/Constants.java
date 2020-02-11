@@ -45,7 +45,7 @@ public final class Constants {
 	/**
 	 * PID Gains may have to be adjusted based on the responsiveness of control loop.
      * kF: 1023 represents output value to Talon at 100%, 20,480 (6000*2048/600) represents Velocity units at 100% output
-     * 
+     * PIDF Controller: 
 	 * 	                                    			  kP   kI   kD   kF          Iz    PeakOut */
 	public final static Gains kGains_Velocity0 = new Gains(0.25, 0.000, 0, 1023/20480,  300,  1.00);
 
