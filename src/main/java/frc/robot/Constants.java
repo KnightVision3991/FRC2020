@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import java.lang.reflect.Array;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
