@@ -13,6 +13,8 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -47,10 +49,15 @@ public class driveTrain extends SubsystemBase {
 
   double leftTargetVelocity;
   double rightTargetVelocity; 
+  DoubleSolenoid shifter = new DoubleSolenoid(0,1);
   public double PIDMultiplier = 6000 * 2048 / 600;
   SupplyCurrentLimitConfiguration driveLimitConfig = new SupplyCurrentLimitConfiguration(true, 35, 40, 0.1);
   TalonFXConfiguration configRight = new TalonFXConfiguration();
   TalonFXConfiguration configLeft = new TalonFXConfiguration();
+
+  public enum shifterState {
+    high, low
+  } 
 
   /**
    * Creates a new driveTrain.
@@ -130,4 +137,15 @@ public class driveTrain extends SubsystemBase {
     driveTrainMotors[0].set(ControlMode.PercentOutput, -leftPow);
     driveTrainMotors[3].set(ControlMode.PercentOutput, rightPow);
   }
+
+  public void shift(shifterState shift){
+    if(shift == shifterState.high){
+      shifter.set(Value.kForward);
+    }
+    else{
+      shifter.set(Value.kReverse);
+    }
+  }
+
+
 }
