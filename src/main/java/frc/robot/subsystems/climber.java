@@ -22,9 +22,9 @@ public class climber extends SubsystemBase {
    * Creates a new climber.
    */
 
-  private final TalonSRX elevatorMotor = new TalonSRX(1);
-  private final TalonSRX winchMotor = new TalonSRX(2);
-  private final TalonSRX winchFollower = new TalonSRX(3);
+  private final TalonSRX elevatorMotor = new TalonSRX(7);
+  private final TalonSRX winchMotor = new TalonSRX(8);
+  private final TalonSRX winchFollower = new TalonSRX(9);
   TalonSRXConfiguration elevatorConfig = new TalonSRXConfiguration();
   TalonSRXConfiguration winchConfig = new TalonSRXConfiguration();
 

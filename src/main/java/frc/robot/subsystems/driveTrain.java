@@ -101,7 +101,7 @@ public class driveTrain extends SubsystemBase {
     driveTrainMotors[2].follow(driveTrainMotors[0]);
 
     driveTrainMotors[4].follow(driveTrainMotors[3]);
-    driveTrainMotors[5].follow(driveTrainMotors[3]);  
+    driveTrainMotors[5].follow(driveTrainMotors[3]);
   }
 
   @Override
@@ -122,20 +122,20 @@ public class driveTrain extends SubsystemBase {
     double leftPow = throttle + rot;
     double rightPow = throttle - rot;
 
-    leftTargetVelocity = leftPow * 6000;
-    rightTargetVelocity = rightPow * 6000;
+    leftTargetVelocity = leftPow * 7000;
+    rightTargetVelocity = rightPow * 7000;
 
-    driveTrainMotors[0].set(ControlMode.Velocity, leftPow * PIDMultiplier);
+    driveTrainMotors[0].set(ControlMode.Velocity, -leftPow * PIDMultiplier);
     driveTrainMotors[3].set(ControlMode.Velocity, rightPow * PIDMultiplier);
 
   }
 
   public void arcadeDrive(double throttle, double rot){
-    double leftPow = throttle + rot;
+    /*double leftPow = throttle + rot;
     double rightPow = throttle - rot;
     
     driveTrainMotors[0].set(ControlMode.PercentOutput, -leftPow);
-    driveTrainMotors[3].set(ControlMode.PercentOutput, rightPow);
+    driveTrainMotors[3].set(ControlMode.PercentOutput, rightPow);*/
   }
 
   public void shift(shifterState shift){

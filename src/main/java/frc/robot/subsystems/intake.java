@@ -16,7 +16,7 @@ public class intake extends SubsystemBase {
   /**
    * Creates a new intake.
    */
-  private final TalonSRX intakeMotor = new TalonSRX(4);
+  private final TalonSRX intakeMotor = new TalonSRX(10);
   private double power;
 
   public intake() {

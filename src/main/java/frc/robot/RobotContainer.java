@@ -28,7 +28,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final driveTrain driveTrain = new driveTrain();
   private final climber climber = new climber();
-  private final intake intake = new intake();
+  //private final intake intake = new intake();
 
   private final driveTrainCommand m_autoCommand = new driveTrainCommand(driveTrain, () -> 0 , () -> 0);
 
@@ -42,10 +42,10 @@ public class RobotContainer {
     // Configure the button bindings
 
     driveTrain.setDefaultCommand(new driveTrainCommand(driveTrain, 
-    () -> gamepad.getTriggerAxis(Hand.kRight),
+    () -> gamepad.getTriggerAxis(Hand.kRight) - gamepad.getTriggerAxis(Hand.kLeft),
     () -> gamepad.getX(Hand.kLeft)));
-    climber.setDefaultCommand(new elevatorCommand(climber));
-    intake.setDefaultCommand(new intakeCommand(intake));
+    //climber.setDefaultCommand(new elevatorCommand(climber));
+    //intake.setDefaultCommand(new intakeCommand(intake));
 
 
 
