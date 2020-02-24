@@ -8,15 +8,20 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.commands.driveTrainCommand;
 import frc.robot.commands.elevatorCommand;
 import frc.robot.commands.intakeCommand;
+import frc.robot.commands.shift;
 import frc.robot.subsystems.climber;
 import frc.robot.subsystems.driveTrain;
 import frc.robot.subsystems.intake;
+import frc.robot.subsystems.driveTrain.shifterState;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -28,12 +33,29 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final driveTrain driveTrain = new driveTrain();
   private final climber climber = new climber();
-  //private final intake intake = new intake();
+  private final intake intake = new intake();
 
   private final driveTrainCommand m_autoCommand = new driveTrainCommand(driveTrain, () -> 0 , () -> 0);
 
 
   private final XboxController gamepad = new XboxController(0);
+    private final JoystickButton RB = new JoystickButton(gamepad, 6);
+    private final JoystickButton LB = new JoystickButton(gamepad, 5);
+  private final Joystick buttonBox = new Joystick(1);
+    private final JoystickButton climbSwitch = new JoystickButton(buttonBox, 1);
+    private final JoystickButton winchSwitch = new JoystickButton(buttonBox, 2);
+    private final JoystickButton elevatorAdjustUp = new JoystickButton(buttonBox, 3);
+    private final JoystickButton elevatorAdjustDown = new JoystickButton(buttonBox, 4);
+    private final JoystickButton intakeIn = new JoystickButton(buttonBox, 5);
+    private final JoystickButton intakeStop = new JoystickButton(buttonBox, 6);
+    private final JoystickButton intakeOut = new JoystickButton(buttonBox, 7);
+    private final JoystickButton armSwitch = new JoystickButton(buttonBox, 8);
+    private final JoystickButton wheelSwitch = new JoystickButton(buttonBox, 9);
+    private final JoystickButton wheelSpin = new JoystickButton(buttonBox, 10);
+    private final JoystickButton wheelColor = new JoystickButton(buttonBox, 11);
+    private final JoystickButton killPID = new JoystickButton(buttonBox, 12);
+  
+
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -44,8 +66,8 @@ public class RobotContainer {
     driveTrain.setDefaultCommand(new driveTrainCommand(driveTrain, 
     () -> gamepad.getTriggerAxis(Hand.kRight) - gamepad.getTriggerAxis(Hand.kLeft),
     () -> gamepad.getX(Hand.kLeft)));
-    //climber.setDefaultCommand(new elevatorCommand(climber));
-    //intake.setDefaultCommand(new intakeCommand(intake));
+    climber.setDefaultCommand(new elevatorCommand(climber));
+    intake.setDefaultCommand(new intakeCommand(intake));
 
 
 
@@ -59,6 +81,9 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    RB.whenActive(new shift(driveTrain, shifterState.high));
+    LB.whenActive(new shift(driveTrain, shifterState.low));
+
   }
 
 
