@@ -130,11 +130,11 @@ public class driveTrain extends SubsystemBase {
     double leftPow = throttle + rot;
     double rightPow = throttle - rot;
 
-    rightTargetVelocity = rightpow * 6200 * PIDMultiplier;
+    rightTargetVelocity = rightPow * 6200 * PIDMultiplier;
     leftTargetVelocity = leftPow * 6200 * PIDMultiplier;
 
     driveTrainMotors[0].set(TalonFXControlMode.Velocity, -leftPow * 6200 * PIDMultiplier);
-    driveTrainMotors[3].set(TalonFXControlMode.Velocity, rightpow * 6200 * PIDMultiplier);
+    driveTrainMotors[3].set(TalonFXControlMode.Velocity, rightPow * 6200 * PIDMultiplier);
 
   }
 
