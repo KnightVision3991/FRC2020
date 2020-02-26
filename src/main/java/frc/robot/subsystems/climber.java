@@ -68,7 +68,7 @@ public class climber extends SubsystemBase {
 
   }
 
-  @Override
+  @Override 
   public void periodic() {
     // This method will be called once per scheduler run
   }
@@ -94,5 +94,5 @@ public class climber extends SubsystemBase {
 
   public void setElevatorPosition(int position){
     pos = position;
-  }
+  }                 
 }

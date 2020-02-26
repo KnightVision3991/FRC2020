@@ -46,9 +46,9 @@ public final class Constants {
      * kF: 1023 represents output value to Talon at 100%, 20,480 (6000*2048/600) represents Velocity units at 100% output
      * PIDF Controller: 
 	 * 	                                    			  kP   kI   kD   kF          Iz    PeakOut */
-	public final static Gains kGains_Velocity0 = new Gains(0.025, 0.000, 0, 1023/20480,  300,  1.00);
+	public final static Gains kGains_Velocity0 = new Gains(0.05, 0.000, 0, 1023/(6200 * (2048 / 600)),  300,  1.00);
 
-	public final static Gains kGains_Velocity1 = new Gains(0.025, 0.000, 0, 1023/20480,  300,  1.00);
+	public final static Gains kGains_Velocity1 = new Gains(0.05, 0.000, 0, 1023/(6200 * (2048 / 600)),  300,  1.00);
 
 
 	public final static Gains kGains_elevator = new Gains(0.25, 0.001, 20, .003, 300, 1);

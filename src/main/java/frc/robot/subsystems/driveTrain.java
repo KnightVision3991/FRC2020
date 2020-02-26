@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
@@ -49,8 +50,8 @@ public class driveTrain extends SubsystemBase {
 
   double leftTargetVelocity;
   double rightTargetVelocity; 
-  DoubleSolenoid shifter = new DoubleSolenoid(0,1);
-  public double PIDMultiplier = 6000 * 2048 / 600;
+  DoubleSolenoid shifter = new DoubleSolenoid(11,0,1);
+  public double PIDMultiplier = 2048 / 600;
   SupplyCurrentLimitConfiguration driveLimitConfig = new SupplyCurrentLimitConfiguration(true, 35, 40, 0.1);
   TalonFXConfiguration configRight = new TalonFXConfiguration();
   TalonFXConfiguration configLeft = new TalonFXConfiguration();
@@ -107,13 +108,20 @@ public class driveTrain extends SubsystemBase {
   @Override
   public void periodic() {
 
-    SmartDashboard.putNumber("Left Side Encoder Values", driveTrainMotors[0].getSensorCollection().getIntegratedSensorVelocity()/2048 * 600);
+    SmartDashboard.putNumber("Left Side Encoder Values", (driveTrainMotors[0].getSensorCollection().getIntegratedSensorVelocity()/1));
     SmartDashboard.putNumber("Left Side Encoder Target", leftTargetVelocity);
 
-    SmartDashboard.putNumber("Right Side Encoder Values", driveTrainMotors[3].getSensorCollection().getIntegratedSensorVelocity()/2048 * 600);
+    SmartDashboard.putNumber("Right Side Encoder Values", (driveTrainMotors[3].getSensorCollection().getIntegratedSensorVelocity()/1));
     SmartDashboard.putNumber("Right Side Encoder Target", rightTargetVelocity);
 
 
+    //leftTargetVelocity = SmartDashboard.getNumber("left target", 0);
+    //rightTargetVelocity = SmartDashboard.getNumber("right target", 0);
+
+    //SmartDashboard.putNumber("left target", leftTargetVelocity);
+    //SmartDashboard.putNumber("right target", rightTargetVelocity);
+
+    
   }
 
   
@@ -122,11 +130,11 @@ public class driveTrain extends SubsystemBase {
     double leftPow = throttle + rot;
     double rightPow = throttle - rot;
 
-    leftTargetVelocity = leftPow * 7000;
-    rightTargetVelocity = rightPow * 7000;
+    rightTargetVelocity = rightpow * 6200 * PIDMultiplier;
+    leftTargetVelocity = leftPow * 6200 * PIDMultiplier;
 
-    driveTrainMotors[0].set(ControlMode.Velocity, -leftPow * PIDMultiplier);
-    driveTrainMotors[3].set(ControlMode.Velocity, rightPow * PIDMultiplier);
+    driveTrainMotors[0].set(TalonFXControlMode.Velocity, -leftPow * 6200 * PIDMultiplier);
+    driveTrainMotors[3].set(TalonFXControlMode.Velocity, rightpow * 6200 * PIDMultiplier);
 
   }
 

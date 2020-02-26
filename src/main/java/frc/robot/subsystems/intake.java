@@ -20,7 +20,7 @@ public class intake extends SubsystemBase {
    */
   private final TalonSRX intakeMotor = new TalonSRX(10);
   private double power;
-  private final DoubleSolenoid intakeSolenoid = new DoubleSolenoid(2, 3);
+  private final DoubleSolenoid intakeSolenoid = new DoubleSolenoid(11,2, 4);
 
   public intake() {
     intakeMotor.configFactoryDefault();
