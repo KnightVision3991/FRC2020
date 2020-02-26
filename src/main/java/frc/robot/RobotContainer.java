@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.commands.driveTrainCommand;
 import frc.robot.commands.elevatorCommand;
 import frc.robot.commands.intakeCommand;
+import frc.robot.commands.intakeSet;
+import frc.robot.commands.setIntakePos;
 import frc.robot.commands.shift;
 import frc.robot.subsystems.climber;
 import frc.robot.subsystems.driveTrain;
@@ -41,6 +43,11 @@ public class RobotContainer {
   private final XboxController gamepad = new XboxController(0);
     private final JoystickButton RB = new JoystickButton(gamepad, 6);
     private final JoystickButton LB = new JoystickButton(gamepad, 5);
+    private final JoystickButton A = new JoystickButton(gamepad, 1);
+    private final JoystickButton B = new JoystickButton(gamepad, 2);
+    private final JoystickButton X = new JoystickButton(gamepad, 3);
+    private final JoystickButton R = new JoystickButton(gamepad, 9);
+    private final JoystickButton L = new JoystickButton(gamepad, 10);
   private final Joystick buttonBox = new Joystick(1);
     private final JoystickButton climbSwitch = new JoystickButton(buttonBox, 1);
     private final JoystickButton winchSwitch = new JoystickButton(buttonBox, 2);
@@ -83,6 +90,11 @@ public class RobotContainer {
   private void configureButtonBindings() {
     RB.whenActive(new shift(driveTrain, shifterState.high));
     LB.whenActive(new shift(driveTrain, shifterState.low));
+    A.whenActive(new intakeSet(intake, 1));
+    B.whenActive(new intakeSet(intake, 0));
+    X.whenActive(new intakeSet(intake, -1));
+    R.whenActive(new setIntakePos(intake, true));
+    L.whenActive(new setIntakePos(intake, false));
 
   }
 
