@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -74,6 +75,8 @@ public class driveTrain extends SubsystemBase {
     configRight.slot0.kI = Constants.kGains_Velocity0.kI;
     configRight.slot0.kD = Constants.kGains_Velocity0.kD;
     configRight.slot0.kF = Constants.kGains_Velocity0.kF;
+    
+
 
     configLeft.nominalOutputForward = 0;
     configLeft.nominalOutputReverse = 0;
@@ -90,11 +93,16 @@ public class driveTrain extends SubsystemBase {
       driveTrainMotors[i].configFactoryDefault();
       driveTrainMotors[i].configSupplyCurrentLimit(driveLimitConfig);
       driveTrainMotors[i].configAllSettings(configRight);
+
+      driveTrainMotors[i].setNeutralMode(NeutralMode.Brake);
+
     }
     for(int i = 3; i < 6; i++){
       driveTrainMotors[i].configFactoryDefault();
       driveTrainMotors[i].configSupplyCurrentLimit(driveLimitConfig);
       driveTrainMotors[i].configAllSettings(configLeft);
+      driveTrainMotors[i].setNeutralMode(NeutralMode.Brake);
+
     }
 
     //Set each of the back two motors to follow the lead motor 
@@ -133,9 +141,10 @@ public class driveTrain extends SubsystemBase {
     rightTargetVelocity = rightPow * 6200 * PIDMultiplier;
     leftTargetVelocity = leftPow * 6200 * PIDMultiplier;
 
-    driveTrainMotors[0].set(TalonFXControlMode.Velocity, -leftPow * 6200 * PIDMultiplier);
-    driveTrainMotors[3].set(TalonFXControlMode.Velocity, rightPow * 6200 * PIDMultiplier);
-
+    //driveTrainMotors[0].set(TalonFXControlMode.Velocity, -leftPow * 6200 * PIDMultiplier);
+    //driveTrainMotors[3].set(TalonFXControlMode.Velocity, rightPow * 6200 * PIDMultiplier);
+    driveTrainMotors[0].set(ControlMode.PercentOutput, -leftPow);
+    driveTrainMotors[3].set(ControlMode.PercentOutput, rightPow);
   }
 
   public void arcadeDrive(double throttle, double rot){
