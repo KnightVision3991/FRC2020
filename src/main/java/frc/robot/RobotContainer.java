@@ -95,6 +95,13 @@ public class RobotContainer {
     X.whenActive(new intakeSet(intake, -1));
     R.whenActive(new setIntakePos(intake, true));
     L.whenActive(new setIntakePos(intake, false));
+    intakeIn.whenActive(new intakeSet(intake, 1));
+    intakeStop.whenActive(new intakeSet(intake, 0));
+    intakeOut.whenActive(new intakeSet(intake, -1));
+    armSwitch.whenActive(new setIntakePos(intake, true));
+    armSwitch.whenInactive(new setIntakePos(intake, false));
+    
+
 
   }
 
