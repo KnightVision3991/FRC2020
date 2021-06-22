@@ -1,61 +1,26 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.Controllers.WPI_LazyTalonFX;
+import frc.robot.CTREConfigs;
 import frc.robot.Constants;
 
 public class driveTrain extends SubsystemBase {
-
-
-
-  //An array that stores all of our motors in an easy to iterate array rather than 6 different variables(Falcon 500 version) - Compiler will unwind forloops anyways
-  /*private final WPI_TalonFX[] driveTrainMotors = {
-    new WPI_TalonFX(0),
-    new WPI_TalonFX(1),
-    new WPI_TalonFX(2),
-
-    new WPI_TalonFX(3),
-    new WPI_TalonFX(4),
-    new WPI_TalonFX(5),
-  };*/
-
-
-  //An array that stores all of our motors in an easy to iterate array rather than 6 different variables(Talon SRX version) - Compiler will unwind forloops anyways
-  private final TalonFX[] driveTrainMotors = {
-    new TalonFX(1),
-    new TalonFX(2),
-    new TalonFX(3),
-
-    new TalonFX(4),
-    new TalonFX(5),
-    new TalonFX(6),
-  };
-  
-
   double leftTargetVelocity;
   double rightTargetVelocity; 
   DoubleSolenoid shifter = new DoubleSolenoid(11,0,1);
-  public double PIDMultiplier = 2048 / 600;
-  SupplyCurrentLimitConfiguration driveLimitConfig = new SupplyCurrentLimitConfiguration(true, 35, 40, 0.1);
-  TalonFXConfiguration configRight = new TalonFXConfiguration();
-  TalonFXConfiguration configLeft = new TalonFXConfiguration();
+
+  private WPI_LazyTalonFX left1;
+  private WPI_LazyTalonFX left2;
+  private WPI_LazyTalonFX left3;
+  private WPI_LazyTalonFX right1;
+  private WPI_LazyTalonFX right2;
+  private WPI_LazyTalonFX right3;
+
+  private DifferentialDrive m_robotDrive;
 
   public enum shifterState {
     high, low
@@ -65,94 +30,27 @@ public class driveTrain extends SubsystemBase {
    * Creates a new driveTrain.
    */
   public driveTrain() {
+    left1 = new WPI_LazyTalonFX(Constants.Drive.left1);
+    left2 = new WPI_LazyTalonFX(Constants.Drive.left2);
+    left3 = new WPI_LazyTalonFX(Constants.Drive.left3);
+    right1 = new WPI_LazyTalonFX(Constants.Drive.right1);
+    right2 = new WPI_LazyTalonFX(Constants.Drive.right2);
+    right3 = new WPI_LazyTalonFX(Constants.Drive.right3);
 
-    configRight.nominalOutputForward = 0;
-    configRight.nominalOutputReverse = 0;
-    configRight.peakOutputForward = 1;
-    configRight.peakOutputReverse = -1;
-    configRight.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-    configRight.slot0.kP = Constants.kGains_Velocity0.kP;
-    configRight.slot0.kI = Constants.kGains_Velocity0.kI;
-    configRight.slot0.kD = Constants.kGains_Velocity0.kD;
-    configRight.slot0.kF = Constants.kGains_Velocity0.kF;
-    
+    left1.configAllSettings(CTREConfigs.driveFXConfig);
+    left2.configAllSettings(CTREConfigs.driveFXConfig);
+    left3.configAllSettings(CTREConfigs.driveFXConfig);
+    right1.configAllSettings(CTREConfigs.driveFXConfig);
+    right2.configAllSettings(CTREConfigs.driveFXConfig);
+    right3.configAllSettings(CTREConfigs.driveFXConfig);
 
+    left2.follow(left1);
+    left3.follow(left1);
 
-    configLeft.nominalOutputForward = 0;
-    configLeft.nominalOutputReverse = 0;
-    configLeft.peakOutputForward = 1;
-    configLeft.peakOutputReverse = -1;
-    configLeft.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-    configLeft.slot0.kP = Constants.kGains_Velocity1.kP;
-    configLeft.slot0.kI = Constants.kGains_Velocity1.kI;
-    configLeft.slot0.kD = Constants.kGains_Velocity1.kD;
-    configLeft.slot0.kF = Constants.kGains_Velocity1.kF;
+    right2.follow(right1);
+    right3.follow(right1);
 
-
-    for(int i = 0; i < 3; i++) {
-      driveTrainMotors[i].configFactoryDefault();
-      driveTrainMotors[i].configSupplyCurrentLimit(driveLimitConfig);
-      driveTrainMotors[i].configAllSettings(configRight);
-
-      driveTrainMotors[i].setNeutralMode(NeutralMode.Brake);
-
-    }
-    for(int i = 3; i < 6; i++){
-      driveTrainMotors[i].configFactoryDefault();
-      driveTrainMotors[i].configSupplyCurrentLimit(driveLimitConfig);
-      driveTrainMotors[i].configAllSettings(configLeft);
-      driveTrainMotors[i].setNeutralMode(NeutralMode.Brake);
-
-    }
-
-    //Set each of the back two motors to follow the lead motor 
-    driveTrainMotors[1].follow(driveTrainMotors[0]);
-    driveTrainMotors[2].follow(driveTrainMotors[0]);
-
-    driveTrainMotors[4].follow(driveTrainMotors[3]);
-    driveTrainMotors[5].follow(driveTrainMotors[3]);
-  }
-
-  @Override
-  public void periodic() {
-
-    SmartDashboard.putNumber("Left Side Encoder Values", (driveTrainMotors[0].getSensorCollection().getIntegratedSensorVelocity()/1));
-    SmartDashboard.putNumber("Left Side Encoder Target", leftTargetVelocity);
-
-    SmartDashboard.putNumber("Right Side Encoder Values", (driveTrainMotors[3].getSensorCollection().getIntegratedSensorVelocity()/1));
-    SmartDashboard.putNumber("Right Side Encoder Target", rightTargetVelocity);
-
-
-    //leftTargetVelocity = SmartDashboard.getNumber("left target", 0);
-    //rightTargetVelocity = SmartDashboard.getNumber("right target", 0);
-
-    //SmartDashboard.putNumber("left target", leftTargetVelocity);
-    //SmartDashboard.putNumber("right target", rightTargetVelocity);
-
-    
-  }
-
-  
-
-  public void arcadeDrivePID(double throttle, double rot) {
-    double leftPow = throttle + rot;
-    double rightPow = throttle - rot;
-
-    rightTargetVelocity = rightPow * 6200 * PIDMultiplier;
-    leftTargetVelocity = leftPow * 6200 * PIDMultiplier;
-
-    //driveTrainMotors[0].set(TalonFXControlMode.Velocity, -leftPow * 6200 * PIDMultiplier);
-    //driveTrainMotors[3].set(TalonFXControlMode.Velocity, rightPow * 6200 * PIDMultiplier);
-    driveTrainMotors[0].set(ControlMode.PercentOutput, -leftPow);
-    driveTrainMotors[3].set(ControlMode.PercentOutput, rightPow);
-  }
-
-  public void arcadeDrive(double throttle, double rot){
-    /*double leftPow = throttle + rot;
-    double rightPow = throttle - rot;
-    
-    driveTrainMotors[0].set(ControlMode.PercentOutput, -leftPow);
-    driveTrainMotors[3].set(ControlMode.PercentOutput, rightPow);*/
+    m_robotDrive = new DifferentialDrive(left1, right1);
   }
 
   public void shift(shifterState shift){
@@ -162,6 +60,15 @@ public class driveTrain extends SubsystemBase {
     else{
       shifter.set(Value.kReverse);
     }
+  }
+
+  public void drive(double speed, double rotation){
+    m_robotDrive.arcadeDrive(speed, rotation);
+  }
+
+  @Override
+  public void periodic() {
+    
   }
 
 

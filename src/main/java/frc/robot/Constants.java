@@ -7,6 +7,11 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+
+import frc.lib.Controllers.TalonConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -18,7 +23,39 @@ package frc.robot;
  */
 public final class Constants {
 
+	public static final class CurrentLimit {
+		public static final SupplyCurrentLimitConfiguration supplyCurLim40 = 
+			new SupplyCurrentLimitConfiguration(true, 35, 60, 0.1);
+			
+		public static final SupplyCurrentLimitConfiguration supplyCurLim30 = 
+			new SupplyCurrentLimitConfiguration(true, 25, 40, 0.1);
+	}
 
+	public static final class Drive {
+		public static final double kP = 0.0;
+		public static final double kI = 0.0;
+		public static final double kD = 0.0;
+		public static final double kF = 0.0;
+
+		public static final TalonConstants left1 = 
+			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.None);
+		
+		public static final TalonConstants left2 = 
+			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
+	
+		public static final TalonConstants left3 = 
+			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
+	
+		public static final TalonConstants right1 = 
+			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.None);
+			
+		public static final TalonConstants right2 = 
+			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
+		
+		public static final TalonConstants right3 = 
+			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
+
+	}
 
 
 
@@ -40,15 +77,6 @@ public final class Constants {
 	 * report to DS if action fails.
 	 */
     public static final int kTimeoutMs = 30;
-
-	/**
-	 * PID Gains may have to be adjusted based on the responsiveness of control loop.
-     * kF: 1023 represents output value to Talon at 100%, 20,480 (6000*2048/600) represents Velocity units at 100% output
-     * PIDF Controller: 
-	 * 	                                    			  kP   kI   kD   kF          Iz    PeakOut */
-	public final static Gains kGains_Velocity0 = new Gains(0.001, 0.0001, 0.01, 1023/(6200 * (2048 / 600)),  300,  1.00);
-
-	public final static Gains kGains_Velocity1 = new Gains(0.001, 0.0001, 0.01, 1023/(6200 * (2048 / 600)),  300,  1.00);
 
 
 	public final static Gains kGains_elevator = new Gains(0.25, 0.001, 20, .003, 300, 1);

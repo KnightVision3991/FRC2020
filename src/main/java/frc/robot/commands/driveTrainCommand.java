@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.commands;
 
 import frc.robot.subsystems.driveTrain;
@@ -13,12 +6,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-/**
- * An example command that uses an example subsystem.
- */
 public class driveTrainCommand extends CommandBase {
-
-
   private final driveTrain m_subsystem;
 
   DoubleSupplier throttle;
@@ -37,8 +25,6 @@ public class driveTrainCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    m_subsystem.arcadeDrivePID(throttle.getAsDouble(), rotation.getAsDouble());
-
+    m_subsystem.drive(throttle.getAsDouble(), rotation.getAsDouble());
   }
 }
