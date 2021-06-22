@@ -1,10 +1,16 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.Controllers.WPI_LazyTalonFX;
+import frc.lib.math.Boundaries;
+import frc.lib.math.Conversions;
 import frc.robot.CTREConfigs;
 import frc.robot.Constants;
 
@@ -21,6 +27,9 @@ public class driveTrain extends SubsystemBase {
   private WPI_LazyTalonFX right3;
 
   private DifferentialDrive m_robotDrive;
+  private DifferentialDriveOdometry m_robotDriveOdo;
+
+  private PigeonIMU gyro;
 
   public enum shifterState {
     high, low
@@ -50,7 +59,11 @@ public class driveTrain extends SubsystemBase {
     right2.follow(right1);
     right3.follow(right1);
 
+    gyro = new PigeonIMU(Constants.Drive.pigeonId);
+    gyro.configFactoryDefault();
+
     m_robotDrive = new DifferentialDrive(left1, right1);
+    m_robotDriveOdo = new DifferentialDriveOdometry(getYaw());
   }
 
   public void shift(shifterState shift){
@@ -66,10 +79,35 @@ public class driveTrain extends SubsystemBase {
     m_robotDrive.arcadeDrive(speed, rotation);
   }
 
-  @Override
-  public void periodic() {
-    
+  public Rotation2d getYaw() {
+    double[] ypr = new double[3];
+    gyro.getYawPitchRoll(ypr);
+    double yaw = Boundaries.to360Boundaries(ypr[0]);
+    return Constants.Drive.invertGyro ? Rotation2d.fromDegrees(360 - yaw) : Rotation2d.fromDegrees(yaw);
+  }
+
+  public double[] getPose() {
+    double leftMeters = 
+      Conversions.falconToMeters(
+        left1.getSelectedSensorPosition(), 
+        Constants.Drive.wheelCircumference, 
+        Constants.Drive.gearRatio
+      );
+      
+    double rightMeters = 
+    Conversions.falconToMeters(
+      right1.getSelectedSensorPosition(), 
+      Constants.Drive.wheelCircumference, 
+      Constants.Drive.gearRatio
+    );
+
+    return new double[] {leftMeters, rightMeters};
   }
 
 
+  @Override
+  public void periodic() {
+    m_robotDriveOdo.update(getYaw(), getPose()[0], getPose()[1]);
+    
+  }
 }

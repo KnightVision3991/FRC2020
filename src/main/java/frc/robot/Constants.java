@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
+import edu.wpi.first.wpilibj.util.Units;
 import frc.lib.Controllers.TalonConstants;
 
 /**
@@ -32,7 +33,7 @@ public final class Constants {
 	}
 
 	public static final class Drive {
-		public static final double kP = 0.0;
+		public static final double kP = 0.0; //TODO
 		public static final double kI = 0.0;
 		public static final double kD = 0.0;
 		public static final double kF = 0.0;
@@ -54,6 +55,14 @@ public final class Constants {
 		
 		public static final TalonConstants right3 = 
 			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
+
+		public static final int pigeonId = 1;
+		public static final boolean invertGyro = false;
+
+		public static final double gearRatio = (7.14 / 1.0); //TODO
+		public static final double wheelDiameter = Units.inchesToMeters(6.0);
+        public static final double wheelCircumference = wheelDiameter * Math.PI;
+
 
 	}
 
