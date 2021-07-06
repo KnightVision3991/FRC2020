@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
+import frc.lib.Controllers.LazyTalonSRX;
 import frc.robot.Constants;
 import frc.robot.commands.elevatorCommand;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -22,46 +23,16 @@ public class climber extends SubsystemBase {
    * Creates a new climber.
    */
 
-  private final TalonSRX elevatorMotor = new TalonSRX(7);
-  private final TalonSRX winchMotor = new TalonSRX(8);
-  private final TalonSRX winchFollower = new TalonSRX(9);
-  TalonSRXConfiguration elevatorConfig = new TalonSRXConfiguration();
-  TalonSRXConfiguration winchConfig = new TalonSRXConfiguration();
+  private LazyTalonSRX elevatorMotor;
+  private LazyTalonSRX winchMotor;
+  private LazyTalonSRX winchFollower;
 
   private int pos;
 
   public climber() {
-    pos = 0;
-    elevatorConfig.nominalOutputForward = 0;
-    elevatorConfig.nominalOutputReverse = 0;
-    elevatorConfig.peakOutputForward = 1;
-    elevatorConfig.peakOutputReverse = -1;
-    elevatorConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.CTRE_MagEncoder_Relative;
-    elevatorConfig.slot0.kF = Constants.kGains_elevator.kF;
-    elevatorConfig.slot0.kP = Constants.kGains_elevator.kP;
-    elevatorConfig.slot0.kI = Constants.kGains_elevator.kI;
-    elevatorConfig.slot0.kD = Constants.kGains_elevator.kD;
-
-    winchConfig.nominalOutputForward = 0;
-    winchConfig.nominalOutputReverse = 0;
-    winchConfig.peakOutputForward = 1;
-    winchConfig.peakOutputReverse = -1;
-    winchConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.CTRE_MagEncoder_Relative;
-    winchConfig.slot0.kF = Constants.kGains_winch.kF;
-    winchConfig.slot0.kP = Constants.kGains_winch.kP;
-    winchConfig.slot0.kI = Constants.kGains_winch.kI;
-    winchConfig.slot0.kD = Constants.kGains_winch.kD;
-
-
-    elevatorMotor.configFactoryDefault();
-    winchMotor.configFactoryDefault();
-    winchFollower.configFactoryDefault();
-
-    elevatorMotor.configAllSettings(elevatorConfig);
-    winchMotor.configAllSettings(winchConfig);
-    winchFollower.configAllSettings(winchConfig);
-
-
+    elevatorMotor = new LazyTalonSRX(Constants.Climber.elevatorMotor);
+    winchMotor = new LazyTalonSRX(Constants.Climber.winchMotor);
+    winchFollower = new LazyTalonSRX(Constants.Climber.winchFollower);
     winchFollower.follow(winchMotor);
     
     CommandScheduler.getInstance().setDefaultCommand(this, new elevatorCommand(this));

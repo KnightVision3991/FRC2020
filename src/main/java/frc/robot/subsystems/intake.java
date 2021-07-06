@@ -8,22 +8,24 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.Controllers.LazyTalonSRX;
+import frc.robot.Constants;
 
 public class intake extends SubsystemBase {
   /**
    * Creates a new intake.
    */
-  private final TalonSRX intakeMotor = new TalonSRX(10);
+  private LazyTalonSRX intakeMotor;
   private double power;
-  private final DoubleSolenoid intakeSolenoid = new DoubleSolenoid(11,2,4);
+  private DoubleSolenoid intakeSolenoid;
 
   public intake() {
-    intakeMotor.configFactoryDefault();
+    intakeMotor = new LazyTalonSRX(Constants.Intake.intakeMotor);
+    intakeSolenoid  = new DoubleSolenoid(Constants.Intake.pistonExtend, Constants.Intake.pistonRetract);
   }
 
   @Override

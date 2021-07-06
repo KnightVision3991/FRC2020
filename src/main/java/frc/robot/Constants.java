@@ -11,8 +11,13 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 import frc.lib.Controllers.TalonConstants;
+import frc.lib.math.PIDGains;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -33,64 +38,84 @@ public final class Constants {
 	}
 
 	public static final class Drive {
-		public static final double kP = 0.0; //TODO
-		public static final double kI = 0.0;
-		public static final double kD = 0.0;
-		public static final double kF = 0.0;
 
 		public static final TalonConstants left1 = 
 			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.None);
 		
 		public static final TalonConstants left2 = 
-			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
+			new TalonConstants(2, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
 	
 		public static final TalonConstants left3 = 
-			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
+			new TalonConstants(3, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
 	
 		public static final TalonConstants right1 = 
-			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.None);
+			new TalonConstants(4, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.None);
 			
 		public static final TalonConstants right2 = 
-			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
+			new TalonConstants(5, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
 		
 		public static final TalonConstants right3 = 
-			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
+			new TalonConstants(6, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
 
 		public static final int pigeonId = 1;
 		public static final boolean invertGyro = false;
 
-		public static final double gearRatio = (7.14 / 1.0); //TODO
+		public static final double gearRatio = (15.32 / 1.0); 
 		public static final double wheelDiameter = Units.inchesToMeters(6.0);
-        public static final double wheelCircumference = wheelDiameter * Math.PI;
+		public static final double wheelCircumference = wheelDiameter * Math.PI;
+		
+		public static final double trackWidth = Units.inchesToMeters(22); //TODO
+		public static final DifferentialDriveKinematics driveKinematics = 
+			new DifferentialDriveKinematics(trackWidth);
 
+		/* Drive Motor Feed Forward Characterization Values */
+        public static final double driveKS = (0.648);
+        public static final double driveKV = (2.09);
+        public static final double driveKA = (0.286);
+        public static final SimpleMotorFeedforward driveFF = 
+            new SimpleMotorFeedforward(driveKS, driveKV, driveKA);
 
+		public static final double kP = 0; //TODO
+		public static final double kI = 0;
+		public static final double kD = 0;
+		public static final double kF = 0;
 	}
 
+	public static final class Intake {
+		public static final TalonConstants intakeMotor = 
+			new TalonConstants(10, CurrentLimit.supplyCurLim30, NeutralMode.Brake, InvertType.None);
+		public static final int pistonExtend = 2;
+		public static final int pistonRetract = 4;
+	}
 
+	public static final class Climber {
+		public static final TalonConstants elevatorMotor =
+			new TalonConstants(7, CurrentLimit.supplyCurLim30, NeutralMode.Brake, InvertType.None);
+		public static final TalonConstants winchMotor =
+			new TalonConstants(8, CurrentLimit.supplyCurLim30, NeutralMode.Brake, InvertType.None);
+		public static final TalonConstants winchFollower =
+			new TalonConstants(9, CurrentLimit.supplyCurLim30, NeutralMode.Brake, InvertType.FollowMaster);
 
-    /**
-	 * Which PID slot to pull gains from. Starting 2018, you can choose from
-	 * 0,1,2 or 3. Only the first two (0,1) are visible in web-based
-	 * configuration.
-	 */
-	public static final int kSlotIdx = 0;
+		public static final PIDGains elevatorGains = new PIDGains(0, 0, 0, 0);//todo
+	}
 
-	/**
-	 * Talon SRX/ Victor SPX will supported multiple (cascaded) PID loops. For
-	 * now we just want the primary one.
-	 */
-	public static final int kPIDLoopIdx = 0;
+	public static final class AutoConstants {
+        public static final double maxSpeed = 3; //MPS TODO
+        public static final double maxAcelleration = 3; //MPSS (meters per second squared) TODO
 
-	/**
-	 * Set to zero to skip waiting for confirmation, set to nonzero to wait and
-	 * report to DS if action fails.
-	 */
-    public static final int kTimeoutMs = 30;
+        // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
 
+        // Create a voltage constraint to ensure we don't accelerate too fast
+        public static final DifferentialDriveVoltageConstraint autoVoltageConstraint =
+            new DifferentialDriveVoltageConstraint(Drive.driveFF, Drive.driveKinematics, 10);
 
-	public final static Gains kGains_elevator = new Gains(0.25, 0.001, 20, .003, 300, 1);
-	public final static Gains kGains_winch = new Gains(0.25, 0.001, 20, .003, 300, 1);
-	public final static int[] elevatorPos = {0,200};
-	
+        // Config for Trajectory Generation
+        public static final TrajectoryConfig trajConfig =
+            new TrajectoryConfig(maxSpeed, maxAcelleration)
+                .setKinematics(Constants.Drive.driveKinematics)
+                .addConstraint(Constants.AutoConstants.autoVoltageConstraint);
+    }
 
 }

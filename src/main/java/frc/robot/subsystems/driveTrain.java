@@ -1,13 +1,17 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import frc.lib.Controllers.WPI_LazyTalonFX;
 import frc.lib.math.Boundaries;
 import frc.lib.math.Conversions;
@@ -79,6 +83,19 @@ public class driveTrain extends SubsystemBase {
     m_robotDrive.arcadeDrive(speed, rotation);
   }
 
+  public void setWheelState(double leftSpeed, double rightSpeed){
+    SimpleMotorFeedforward driveFF = Constants.Drive.driveFF;
+
+    double leftDemand = Conversions.MPSToFalcon(leftSpeed, Constants.Drive.wheelCircumference, Constants.Drive.gearRatio);
+    double rightDemand = Conversions.MPSToFalcon(rightSpeed, Constants.Drive.wheelCircumference, Constants.Drive.gearRatio);
+
+    double leftFF = (driveFF.calculate(leftDemand) / 12.0); //Divide by 12 because CTRE is in percent not voltage
+    double rightFF = (driveFF.calculate(rightDemand) / 12.0); //Divide by 12 because CTRE is in percent not voltage
+
+    left1.set(ControlMode.Velocity, leftDemand, DemandType.ArbitraryFeedForward, leftFF);
+    right1.set(ControlMode.Velocity, rightDemand, DemandType.ArbitraryFeedForward, rightFF);
+}
+
   public Rotation2d getYaw() {
     double[] ypr = new double[3];
     gyro.getYawPitchRoll(ypr);
@@ -86,7 +103,7 @@ public class driveTrain extends SubsystemBase {
     return Constants.Drive.invertGyro ? Rotation2d.fromDegrees(360 - yaw) : Rotation2d.fromDegrees(yaw);
   }
 
-  public double[] getPose() {
+  public double[] getPoseDouble() {
     double leftMeters = 
       Conversions.falconToMeters(
         left1.getSelectedSensorPosition(), 
@@ -95,19 +112,29 @@ public class driveTrain extends SubsystemBase {
       );
       
     double rightMeters = 
-    Conversions.falconToMeters(
-      right1.getSelectedSensorPosition(), 
-      Constants.Drive.wheelCircumference, 
-      Constants.Drive.gearRatio
-    );
+      Conversions.falconToMeters(
+        right1.getSelectedSensorPosition(), 
+        Constants.Drive.wheelCircumference, 
+        Constants.Drive.gearRatio
+      );
 
     return new double[] {leftMeters, rightMeters};
   }
 
+  public Pose2d getPose(){
+    return m_robotDriveOdo.getPoseMeters();
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    left1.setSelectedSensorPosition(0);
+    right1.setSelectedSensorPosition(0);
+    m_robotDriveOdo.resetPosition(pose, getYaw());
+}
+
 
   @Override
   public void periodic() {
-    m_robotDriveOdo.update(getYaw(), getPose()[0], getPose()[1]);
+    m_robotDriveOdo.update(getYaw(), getPoseDouble()[0], getPoseDouble()[1]);
     
   }
 }
