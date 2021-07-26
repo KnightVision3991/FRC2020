@@ -12,10 +12,11 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autos.exampleAuto;
+import frc.robot.commands.IntakeControl;
 import frc.robot.commands.driveTrainCommand;
 import frc.robot.commands.elevatorCommand;
-import frc.robot.commands.intakeCommand;
-import frc.robot.commands.intakeSet;
 import frc.robot.commands.setIntakePos;
 import frc.robot.commands.shift;
 import frc.robot.subsystems.climber;
@@ -23,6 +24,7 @@ import frc.robot.subsystems.driveTrain;
 import frc.robot.subsystems.intake;
 import frc.robot.subsystems.driveTrain.shifterState;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -37,7 +39,7 @@ public class RobotContainer {
   private final climber climber = new climber();
   private final intake intake = new intake();
 
-  private final driveTrainCommand m_autoCommand = new driveTrainCommand(driveTrain, () -> 0 , () -> 0);
+  private final Command m_autoCommand = new exampleAuto(driveTrain, intake);
 
 
   private final XboxController gamepad = new XboxController(0);
@@ -74,7 +76,6 @@ public class RobotContainer {
     () -> gamepad.getTriggerAxis(Hand.kRight) - gamepad.getTriggerAxis(Hand.kLeft),
     () -> gamepad.getX(Hand.kLeft)));
     climber.setDefaultCommand(new elevatorCommand(climber));
-    intake.setDefaultCommand(new intakeCommand(intake));
 
 
 
@@ -90,14 +91,15 @@ public class RobotContainer {
   private void configureButtonBindings() {
     RB.whenActive(new shift(driveTrain, shifterState.high));
     LB.whenActive(new shift(driveTrain, shifterState.low));
-    A.whenActive(new intakeSet(intake, 1));
-    B.whenActive(new intakeSet(intake, 0));
-    X.whenActive(new intakeSet(intake, -1));
+
+    A.whileHeld(new IntakeControl(intake, 1));
+    X.whileHeld(new IntakeControl(intake, -1));
+
     R.whenActive(new setIntakePos(intake, true));
     L.whenActive(new setIntakePos(intake, false));
-    intakeIn.whenActive(new intakeSet(intake, 1));
-    intakeStop.whenActive(new intakeSet(intake, 0));
-    intakeOut.whenActive(new intakeSet(intake, -1));
+    // intakeIn.whenActive(new intakeSet(intake, 1));
+    // intakeStop.whenActive(new intakeSet(intake, 0));
+    // intakeOut.whenActive(new intakeSet(intake, -1));
     armSwitch.whenActive(new setIntakePos(intake, true));
     armSwitch.whenInactive(new setIntakePos(intake, false));
     
@@ -113,6 +115,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return m_autoCommand.andThen(new InstantCommand(() -> driveTrain.drive(0, 0)));
   }
 }

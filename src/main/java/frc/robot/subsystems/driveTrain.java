@@ -2,14 +2,18 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import frc.lib.Controllers.WPI_LazyTalonFX;
@@ -21,7 +25,7 @@ import frc.robot.Constants;
 public class driveTrain extends SubsystemBase {
   double leftTargetVelocity;
   double rightTargetVelocity; 
-  DoubleSolenoid shifter = new DoubleSolenoid(11,0,1);
+  DoubleSolenoid shifter = new DoubleSolenoid(11, 2, 4);
 
   private WPI_LazyTalonFX left1;
   private WPI_LazyTalonFX left2;
@@ -32,12 +36,21 @@ public class driveTrain extends SubsystemBase {
 
   private DifferentialDrive m_robotDrive;
   private DifferentialDriveOdometry m_robotDriveOdo;
+  
+  private SimpleMotorFeedforward driveFF;
 
   private PigeonIMU gyro;
 
   public enum shifterState {
     high, low
   } 
+
+  private int currentNeutral = 0;
+
+  private DriverStation ds;
+
+  
+  private double previousP = 0;
 
   /**
    * Creates a new driveTrain.
@@ -63,11 +76,21 @@ public class driveTrain extends SubsystemBase {
     right2.follow(right1);
     right3.follow(right1);
 
-    gyro = new PigeonIMU(Constants.Drive.pigeonId);
+    gyro = new PigeonIMU(new TalonSRX(Constants.Drive.pigeonId));
     gyro.configFactoryDefault();
 
     m_robotDrive = new DifferentialDrive(left1, right1);
     m_robotDriveOdo = new DifferentialDriveOdometry(getYaw());
+    m_robotDrive.setSafetyEnabled(false);
+    m_robotDrive.setRightSideInverted(false);
+    
+    driveFF = new SimpleMotorFeedforward(Constants.Drive.driveKS / 12, Constants.Drive.driveKV / 12, Constants.Drive.driveKA / 12);
+
+    ds = DriverStation.getInstance();
+
+    
+    SmartDashboard.putNumber("Drive p", 0);
+    SmartDashboard.putNumber("Drive mps", 0);
   }
 
   public void shift(shifterState shift){
@@ -84,17 +107,12 @@ public class driveTrain extends SubsystemBase {
   }
 
   public void setWheelState(double leftSpeed, double rightSpeed){
-    SimpleMotorFeedforward driveFF = Constants.Drive.driveFF;
-
     double leftDemand = Conversions.MPSToFalcon(leftSpeed, Constants.Drive.wheelCircumference, Constants.Drive.gearRatio);
     double rightDemand = Conversions.MPSToFalcon(rightSpeed, Constants.Drive.wheelCircumference, Constants.Drive.gearRatio);
 
-    double leftFF = (driveFF.calculate(leftDemand) / 12.0); //Divide by 12 because CTRE is in percent not voltage
-    double rightFF = (driveFF.calculate(rightDemand) / 12.0); //Divide by 12 because CTRE is in percent not voltage
-
-    left1.set(ControlMode.Velocity, leftDemand, DemandType.ArbitraryFeedForward, leftFF);
-    right1.set(ControlMode.Velocity, rightDemand, DemandType.ArbitraryFeedForward, rightFF);
-}
+    left1.set(ControlMode.Velocity, leftDemand, DemandType.ArbitraryFeedForward, driveFF.calculate(leftDemand));
+    right1.set(ControlMode.Velocity, rightDemand, DemandType.ArbitraryFeedForward, driveFF.calculate(rightDemand));
+  }
 
   public Rotation2d getYaw() {
     double[] ypr = new double[3];
@@ -129,12 +147,54 @@ public class driveTrain extends SubsystemBase {
     left1.setSelectedSensorPosition(0);
     right1.setSelectedSensorPosition(0);
     m_robotDriveOdo.resetPosition(pose, getYaw());
-}
+  }
+
+  public void setNeutral(NeutralMode neutral){
+    left1.setNeutralMode(neutral);
+    left2.setNeutralMode(neutral);
+    left3.setNeutralMode(neutral);
+    right1.setNeutralMode(neutral);
+    right2.setNeutralMode(neutral);
+    right3.setNeutralMode(neutral);
+  }
 
 
   @Override
   public void periodic() {
     m_robotDriveOdo.update(getYaw(), getPoseDouble()[0], getPoseDouble()[1]);
+    SmartDashboard.putNumber("yaw", getYaw().getDegrees());
+    SmartDashboard.putNumber("x", m_robotDriveOdo.getPoseMeters().getTranslation().getX());
+    SmartDashboard.putNumber("y", m_robotDriveOdo.getPoseMeters().getTranslation().getY());
+
+    if (ds.isEnabled() && currentNeutral == 1){
+      setNeutral(NeutralMode.Brake);
+      currentNeutral = 0;
+    }
     
+    if (ds.isDisabled() && currentNeutral == 0){
+      setNeutral(NeutralMode.Coast);
+      currentNeutral = 1;
+    }
+
+    
+    
+  //   double mps = SmartDashboard.getNumber("Drive mps", 0);
+  //   setWheelState(mps, mps);
+
+  //   if (previousP != SmartDashboard.getNumber("Drive p", 0)){
+  //       previousP = SmartDashboard.getNumber("Drive p", 0);
+  //       left1.config_kP(0, previousP);
+  //       right1.config_kP(0, previousP);
+  //   }
+
+  //   SmartDashboard.putNumber("left drive", Conversions.falconToMPS(
+  //       left1.getSelectedSensorVelocity(), 
+  //       Constants.Drive.wheelCircumference, 
+  //       Constants.Drive.gearRatio));
+
+  //   SmartDashboard.putNumber("right drive", Conversions.falconToMPS(
+  //       right1.getSelectedSensorVelocity(), 
+  //       Constants.Drive.wheelCircumference, 
+  //       Constants.Drive.gearRatio));
   }
 }

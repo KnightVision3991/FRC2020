@@ -12,12 +12,12 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 import frc.lib.Controllers.TalonConstants;
-import frc.lib.math.PIDGains;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -40,7 +40,7 @@ public final class Constants {
 	public static final class Drive {
 
 		public static final TalonConstants left1 = 
-			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.None);
+			new TalonConstants(1, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.InvertMotorOutput);
 		
 		public static final TalonConstants left2 = 
 			new TalonConstants(2, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
@@ -57,7 +57,7 @@ public final class Constants {
 		public static final TalonConstants right3 = 
 			new TalonConstants(6, CurrentLimit.supplyCurLim40, NeutralMode.Brake, InvertType.FollowMaster);
 
-		public static final int pigeonId = 1;
+		public static final int pigeonId = 10;
 		public static final boolean invertGyro = false;
 
 		public static final double gearRatio = (15.32 / 1.0); 
@@ -69,23 +69,21 @@ public final class Constants {
 			new DifferentialDriveKinematics(trackWidth);
 
 		/* Drive Motor Feed Forward Characterization Values */
-        public static final double driveKS = (0.648);
-        public static final double driveKV = (2.09);
-        public static final double driveKA = (0.286);
-        public static final SimpleMotorFeedforward driveFF = 
-            new SimpleMotorFeedforward(driveKS, driveKV, driveKA);
+        public static final double driveKS = (0.544);
+        public static final double driveKV = (3.46);
+        public static final double driveKA = (0.209);
 
-		public static final double kP = 0; //TODO
-		public static final double kI = 0;
-		public static final double kD = 0;
-		public static final double kF = 0;
+		public static final double kP = 0.25; //TODO
+		public static final double kI = 0.0;
+		public static final double kD = 0.0;
+		public static final double kF = 0.0;
 	}
 
 	public static final class Intake {
 		public static final TalonConstants intakeMotor = 
 			new TalonConstants(10, CurrentLimit.supplyCurLim30, NeutralMode.Brake, InvertType.None);
-		public static final int pistonExtend = 2;
-		public static final int pistonRetract = 4;
+		public static final int pistonExtend = 1;
+		public static final int pistonRetract = 0;
 	}
 
 	public static final class Climber {
@@ -96,7 +94,12 @@ public final class Constants {
 		public static final TalonConstants winchFollower =
 			new TalonConstants(9, CurrentLimit.supplyCurLim30, NeutralMode.Brake, InvertType.FollowMaster);
 
-		public static final PIDGains elevatorGains = new PIDGains(0, 0, 0, 0);//todo
+	}
+
+	public static final class Vision{
+		public static final double limelightHeight = 22;
+		public static final Rotation2d limelightAngle = new Rotation2d(20);
+		public static final double goalHeight = 22;
 	}
 
 	public static final class AutoConstants {
@@ -107,9 +110,11 @@ public final class Constants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
 
-        // Create a voltage constraint to ensure we don't accelerate too fast
+		// Create a voltage constraint to ensure we don't accelerate too fast
+		public static final SimpleMotorFeedforward driveFF = 
+			new SimpleMotorFeedforward(Drive.driveKS, Drive.driveKV, Drive.driveKA);
         public static final DifferentialDriveVoltageConstraint autoVoltageConstraint =
-            new DifferentialDriveVoltageConstraint(Drive.driveFF, Drive.driveKinematics, 10);
+            new DifferentialDriveVoltageConstraint(driveFF, Drive.driveKinematics, 10);
 
         // Config for Trajectory Generation
         public static final TrajectoryConfig trajConfig =

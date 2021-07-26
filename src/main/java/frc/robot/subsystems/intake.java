@@ -20,12 +20,11 @@ public class intake extends SubsystemBase {
    * Creates a new intake.
    */
   private LazyTalonSRX intakeMotor;
-  private double power;
   private DoubleSolenoid intakeSolenoid;
 
   public intake() {
     intakeMotor = new LazyTalonSRX(Constants.Intake.intakeMotor);
-    intakeSolenoid  = new DoubleSolenoid(Constants.Intake.pistonExtend, Constants.Intake.pistonRetract);
+    intakeSolenoid  = new DoubleSolenoid(11, Constants.Intake.pistonExtend, Constants.Intake.pistonRetract);
   }
 
   @Override
@@ -33,11 +32,7 @@ public class intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void intakeSet(double pow){
-    power = pow;
-  }
-
-  public void intakeWork(){
+  public void setPower(double power){
     intakeMotor.set(ControlMode.PercentOutput, power);
   }
 
