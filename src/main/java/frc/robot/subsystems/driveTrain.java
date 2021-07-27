@@ -6,6 +6,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -14,6 +17,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import frc.lib.Controllers.WPI_LazyTalonFX;
@@ -163,8 +167,8 @@ public class driveTrain extends SubsystemBase {
   public void periodic() {
     m_robotDriveOdo.update(getYaw(), getPoseDouble()[0], getPoseDouble()[1]);
     SmartDashboard.putNumber("yaw", getYaw().getDegrees());
-    SmartDashboard.putNumber("x", m_robotDriveOdo.getPoseMeters().getTranslation().getX());
-    SmartDashboard.putNumber("y", m_robotDriveOdo.getPoseMeters().getTranslation().getY());
+    SmartDashboard.putNumber("x", m_robotDriveOdo.getPoseMeters().getX());
+    SmartDashboard.putNumber("y", m_robotDriveOdo.getPoseMeters().getY());
 
     if (ds.isEnabled() && currentNeutral == 1){
       setNeutral(NeutralMode.Brake);
@@ -176,7 +180,19 @@ public class driveTrain extends SubsystemBase {
       currentNeutral = 1;
     }
 
-    
+     /* Falcon Dashboard Setup*/
+     NetworkTableInstance inst = NetworkTableInstance.getDefault();
+     NetworkTable table = inst.getTable("Live_Dashboard");
+
+     /* PoseEstimator Values */
+     NetworkTableEntry robotX = table.getEntry("robotX");
+     NetworkTableEntry robotY = table.getEntry("robotY");
+     NetworkTableEntry robotHeading = table.getEntry("robotHeading");
+
+     robotX.setDouble(Units.metersToFeet(m_robotDriveOdo.getPoseMeters().getX()));
+     robotY.setDouble(Units.metersToFeet(m_robotDriveOdo.getPoseMeters().getY()));
+     robotHeading.setDouble(m_robotDriveOdo.getPoseMeters().getRotation().getRadians());
+     table.getEntry("isFollowingPath").setBoolean(true);
     
   //   double mps = SmartDashboard.getNumber("Drive mps", 0);
   //   setWheelState(mps, mps);
